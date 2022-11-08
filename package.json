@@ -1,0 +1,75 @@
+{
+  "name": "react-native-css-modules",
+  "version": "0.0.1-alpha.14",
+  "main": "cjs/index.js",
+  "types": "esm/index.d.ts",
+  "module": "esm/index.js",
+  "sideEffects": false,
+  "scripts": {
+    "test": "ava",
+    "prepublishOnly": "npm run test && npm run build",
+    "example:start": "cd example && npm run start",
+    "example:dev": "cd example && npm run dev",
+    "lint": "eslint --ext .tsx,.ts src",
+    "lint:fix": "eslint --fix --ext .tsx,.ts src",
+    "cleanup": "rimraf esm && rimraf cjs",
+    "build": "npm run cleanup && npm run build:esm && npm run build:cjs",
+    "build:esm": "tsc --module es2015 --outDir esm",
+    "build:cjs": "tsc --module commonjs --outDir cjs",
+    "build:watch": "npm run cleanup && npm-run-all -p \"build:esm -- -w\" \"build:cjs -- -w\""
+  },
+  "devDependencies": {
+    "@esbuild-kit/cjs-loader": "^2.4.0",
+    "@types/babel__core": "^7.1.19",
+    "@types/css": "^0.0.33",
+    "@types/lodash.debounce": "^4.0.7",
+    "@types/metro": "^0.66.1",
+    "@types/node": "^18.11.9",
+    "@types/react": "^18.0.25",
+    "@types/react-native": "^0.70.6",
+    "@typescript-eslint/eslint-plugin": "^5.42.0",
+    "@typescript-eslint/parser": "^5.42.0",
+    "ava": "^5.0.1",
+    "eslint": "^8.26.0",
+    "npm-run-all": "^4.1.5",
+    "rimraf": "^3.0.2",
+    "typescript": "^4.8.4"
+  },
+  "files": [
+    "LICENSE",
+    "README.md",
+    "esm/",
+    "cjs/",
+    "metro.d.ts",
+    "metro.js",
+    "babel.d.ts",
+    "babel.js"
+  ],
+  "ava": {
+    "extensions": [
+      "ts"
+    ],
+    "files": [
+      "src/__tests__/**/*"
+    ],
+    "nodeArguments": [
+      "--require=@esbuild-kit/cjs-loader"
+    ]
+  },
+  "author": "James Waterhouse <09jwater@gmail.com>",
+  "license": "MIT",
+  "repository": "https://github.com/Censkh/sendable-error",
+  "keywords": [
+    "typescript",
+    "error",
+    "api"
+  ],
+  "dependencies": {
+    "camelize": "^1.0.1",
+    "css": "^3.0.0",
+    "css-color-keywords": "^1.0.0",
+    "css-what": "^6.1.0",
+    "postcss-value-parser": "^4.2.0",
+    "sass": "^1.56.0"
+  }
+}
