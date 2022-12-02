@@ -1,6 +1,7 @@
 import type {StyleProp} from "react-native";
 
-export type PossiblyDynamicStyleProp<T> = StyleProp<NamedStyle<T> | DynamicStyle<T> | T>;
+export type PossiblyCompiledStyle<T> = NamedStyle<T> | DynamicStyle<T> | T;
+export type PossiblyCompiledStyleProp<T> = StyleProp<PossiblyCompiledStyle<T>>;
 
 export type NamedStyle<T> = T & {
   __name: string

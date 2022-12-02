@@ -1,7 +1,7 @@
-import type {StyleProp}                                         from "react-native";
-import {isDynamicStyle, isNamedStyle, PossiblyDynamicStyleProp} from "../common/Styles";
+import type {StyleProp}                                          from "react-native";
+import {isDynamicStyle, isNamedStyle, PossiblyCompiledStyleProp} from "../common/Styles";
 
-export type DynamicStyleProcessor<T> = ((style: PossiblyDynamicStyleProp<T>) => StyleProp<T>);
+export type DynamicStyleProcessor<T> = ((style: PossiblyCompiledStyleProp<T>) => StyleProp<T>);
 
 interface ProcessDynamicStylesOutput<T> {
   classes: string[],
@@ -16,7 +16,7 @@ export interface DynamicStyleContext {
   optimise?: boolean,
 }
 
-const processDynamicStyleProp = <T>(style: PossiblyDynamicStyleProp<T>, context: DynamicStyleContext, output?: ProcessDynamicStylesOutput<T>): ProcessDynamicStylesOutput<T> => {
+const processDynamicStyleProp = <T>(style: PossiblyCompiledStyleProp<T>, context: DynamicStyleContext, output?: ProcessDynamicStylesOutput<T>): ProcessDynamicStylesOutput<T> => {
   const resolvedOutput = output || {
     classes               : [],
     result                : [],
@@ -95,7 +95,7 @@ const postProcessDynamicStyles = <T>(output: ProcessDynamicStylesOutput<T>, cont
   }
 };
 
-export const processDynamicStyles = <T>(style: PossiblyDynamicStyleProp<T>, context: DynamicStyleContext): ProcessDynamicStylesOutput<T> => {
+export const processDynamicStyles = <T>(style: PossiblyCompiledStyleProp<T>, context: DynamicStyleContext): ProcessDynamicStylesOutput<T> => {
   const processingOutput = processDynamicStyleProp(style, context);
 
   postProcessDynamicStyles(processingOutput, context);

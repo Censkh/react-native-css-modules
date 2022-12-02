@@ -3,7 +3,7 @@ import {parseCss, ParseCssResult}                      from "./CssParser";
 import * as CssWhat                                    from "css-what";
 // @ts-ignore
 import css2Rn, {getPropertyName, getStylesForProperty} from "../../vendored/css-to-react-native/src/index";
-import {PossiblyDynamicStyleProp}                      from "../../common/Styles";
+import {PossiblyCompiledStyleProp}                      from "../../common/Styles";
 
 type StyleTuple = [string, string];
 
@@ -17,7 +17,7 @@ export interface GenerateReactNativeStylesResult extends ParseCssResult {
   styles: ReactNativeStyles,
 }
 
-export type ReactNativeStyles = Record<string, PossiblyDynamicStyleProp<any>>;
+export type ReactNativeStyles = Record<string, PossiblyCompiledStyleProp<any>>;
 
 const SHORTHAND_BORDER_PROPS = [
   "borderRadius",
