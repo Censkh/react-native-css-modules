@@ -24,6 +24,8 @@ const findVariant = (name: string, extensions: string[], includePaths: string[])
   return false;
 };
 
+const INCLUDE_PATHS = [process.cwd(), path.resolve(process.cwd(), "node_modules")];
+
 const resolveSassOptions = (options: ReactNativeStylesGeneratorOptions): LegacyOptions<any> => {
   const {filename, src, platform} = options;
 
@@ -33,7 +35,7 @@ const resolveSassOptions = (options: ReactNativeStylesGeneratorOptions): LegacyO
     ".native" + ext,
   ]);
   return {
-    includePaths  : filename ? [path.dirname(filename), process.cwd()] : [process.cwd()],
+    includePaths  : filename ? [path.dirname(filename), ...INCLUDE_PATHS] : INCLUDE_PATHS,
     indentedSyntax: filename?.endsWith(".sass"),
     importer      : function(this: any, url: string /*, prev, done */) {
       // url is the path in import as is, which LibSass encountered.
