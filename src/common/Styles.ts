@@ -4,7 +4,8 @@ export type PossiblyCompiledStyle<T> = NamedStyle<T> | DynamicStyle<T> | T;
 export type PossiblyCompiledStyleProp<T> = StyleProp<PossiblyCompiledStyle<T>>;
 
 export type NamedStyle<T> = T & {
-  __name: string
+  __name: string,
+  __source: number
 };
 
 export type PrecedentStyle<T> = T & {

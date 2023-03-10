@@ -26,9 +26,13 @@ const SHORTHAND_BORDER_PROPS = [
   "borderStyle",
 ];
 
+let sourceCounter = 0;
+
 export const generateReactNativeStyles = (options: ReactNativeStylesGeneratorOptions): GenerateReactNativeStylesResult => {
   const {stylesheet, css}         = parseCss(options);
   const styles: ReactNativeStyles = {};
+
+  const sourceId = sourceCounter++;
 
   const allClasses  =new Set<string>();
 
@@ -95,7 +99,10 @@ export const generateReactNativeStyles = (options: ReactNativeStylesGeneratorOpt
           if (classes.length > 0 && selectorSupported) {
             const name = classes.pop()!;
 
-            const selectorStyleObject: any = styles[name] || (styles[name] = {__name: name} as any);
+            const selectorStyleObject: any = styles[name] || (styles[name] = {
+              __name: name,
+              __source: sourceId,
+            } as any);
 
             if (Object.keys(vars).length > 0) {
               const dynamic = selectorStyleObject.__dynamic || (selectorStyleObject.__dynamic = {});

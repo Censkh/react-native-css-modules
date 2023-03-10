@@ -2,7 +2,8 @@
   "compilerOptions": {
     "lib": [
       "ES6",
-      "ESNext"
+      "ESNext",
+      "ES2017"
     ],
     "moduleResolution": "node",
     "module": "ES2015",

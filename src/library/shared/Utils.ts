@@ -12,6 +12,7 @@ export const flatten = (styleProp: StyleProp<any>, result?: any): any => {
   }
 
   delete resolvedResult.__name;
+  delete resolvedResult.__source;
   delete resolvedResult.__dynamic;
   delete resolvedResult.__precedence;
 
