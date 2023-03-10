@@ -1,12 +1,13 @@
 {
   "name": "react-native-css-modules",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "cjs/index.js",
   "types": "esm/index.d.ts",
   "module": "esm/index.js",
   "sideEffects": false,
   "scripts": {
     "test": "ava",
+    "deploy": "yarn publish",
     "prepublishOnly": "npm run test && npm run build",
     "example:start": "cd example && npm run start",
     "example:dev": "cd example && npm run dev",
