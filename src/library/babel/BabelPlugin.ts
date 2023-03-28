@@ -49,17 +49,6 @@ const outputDir = (state: babel.PluginPass) => {
 export default function babelPluginReactNativeCssModules(): babel.PluginObj {
   return {
     visitor: {
-      // import {} from "react-native"
-      ImportDeclaration(path, state) {
-        const {value} = path.node.source;
-        if (value === "react-native") {
-          const outDir           = outputDir(state);
-          const rnPath           = p.relative(outDir, p.resolve(OUTPUT_DIR_NAME)).replaceAll("\\", "/");
-          path.node.source.value = rnPath.endsWith(".") ? rnPath + "/ReactNative" : rnPath + "./ReactNative";
-        }
-
-      },
-
       // import styles from './style.css';
       ImportDefaultSpecifier(path, state) {
         const {value} = (path.parentPath.node as any).source;
