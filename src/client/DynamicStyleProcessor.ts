@@ -1,7 +1,11 @@
 import type {StyleProp}                                          from "react-native";
 import {isDynamicStyle, isNamedStyle, PossiblyCompiledStyleProp} from "../common/Styles";
 
-export type DynamicStyleProcessor<T> = ((style: PossiblyCompiledStyleProp<T>) => StyleProp<T>);
+export interface DynamicStyleProcessorOptions {
+  state?: string[]
+}
+
+export type DynamicStyleProcessor<T> = ((style: PossiblyCompiledStyleProp<T>, options?: DynamicStyleProcessorOptions) => StyleProp<T>);
 
 interface ProcessDynamicStylesOutput<T> {
   classes: string[],

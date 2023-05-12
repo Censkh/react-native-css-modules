@@ -3,7 +3,8 @@
     "lib": [
       "ES6",
       "ESNext",
-      "ES2017"
+      "ES2017",
+      "DOM"
     ],
     "moduleResolution": "node",
     "module": "ES2015",

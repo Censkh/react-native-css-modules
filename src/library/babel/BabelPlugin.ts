@@ -63,7 +63,8 @@ export default function babelPluginReactNativeCssModules(): babel.PluginObj {
 
           const outDir = outputDir(state);
           fs.writeFileSync(p.resolve(outDir, `${componentName}.module.css`), css);
-          fs.writeFileSync(p.resolve(outDir, `${componentName}.generated-styles.js`), `var r=require('./${componentName}.module.css');var m=typeof r.default==="object"?r.default:r;var p={};for(var k of Object.keys(m)){var v=m[k];p[k]={$$css:true,[v]:v}}module.exports=p;`);
+          // metro web handles CSS modules for us
+          fs.writeFileSync(p.resolve(outDir, `${componentName}.generated-styles.js`), `module.exports=require('./${componentName}.module.css');`);
           fs.writeFileSync(p.resolve(outDir, `${componentName}.generated-styles.native.js`), `module.exports=${JSON.stringify(styles)}`);
           (path.parentPath.node as any).source.value = `./${componentName}.generated-styles`;
           //path.parentPath.node.source =

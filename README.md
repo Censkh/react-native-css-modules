@@ -6,6 +6,8 @@ Use CSS modules in React Native & React Native Web
 
 **Note:** this package is in early development, use with caution
 
+Must be used with Metro web
+
 ## Features
 
 - Minimal selector support (`.button.small`)
