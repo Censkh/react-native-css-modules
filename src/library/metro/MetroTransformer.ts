@@ -14,16 +14,17 @@ export const createCssModulesTransformer = (upstreamTransformer: Transformer): T
   return {
     transform: async (transformerOptions: TransformerOptions) => {
       const {filename, options} = transformerOptions;
-      if (filename.endsWith(".scss") || filename.endsWith(".sass") || filename.endsWith(".css")) {
-        const {styles} = generateReactNativeStyles({...transformerOptions, platform: options.platform});
-        return upstreamTransformer.transform({
-          src: "module.exports = " + JSON.stringify(styles),
-          filename,
-          options,
-        });
-      } else {
-        return upstreamTransformer.transform(transformerOptions);
+      if (options.platform !== "web") {
+        if (filename.endsWith(".scss") || filename.endsWith(".sass") || filename.endsWith(".css")) {
+          const {styles} = generateReactNativeStyles({...transformerOptions, platform: options.platform});
+          return upstreamTransformer.transform({
+            src: "module.exports = " + JSON.stringify(styles),
+            filename,
+            options,
+          });
+        }
       }
+      return upstreamTransformer.transform(transformerOptions);
     },
   };
 };

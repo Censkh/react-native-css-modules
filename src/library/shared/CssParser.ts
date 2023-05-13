@@ -34,6 +34,9 @@ const resolveSassOptions = (options: ReactNativeStylesGeneratorOptions): LegacyO
     platform === "android" ? ".android" + ext : ".ios" + ext,
     ".native" + ext,
   ]);
+
+  const data = filename ? fs.readFileSync(filename).toString() : src;
+
   return {
     includePaths  : filename ? [path.dirname(filename), ...INCLUDE_PATHS] : INCLUDE_PATHS,
     indentedSyntax: filename?.endsWith(".sass"),
@@ -56,7 +59,8 @@ const resolveSassOptions = (options: ReactNativeStylesGeneratorOptions): LegacyO
         return {file: f};
       }
     },
-    data          : src,
+    file          : filename,
+    data          : data,
 
   };
 };
