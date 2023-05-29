@@ -4,9 +4,7 @@ import {useCallback, useContext}                           from "react";
 import {DynamicStyleProcessor, processDynamicStyles, Vars} from "./DynamicStyleProcessor";
 import {processWebStylePrecedence}                         from "./WebStylePrecedanceProcessor";
 
-const DEFAULT_BASE_FONT_SIZE = 16;
-
-export const DynamicStyleOptionsContext = React.createContext<{vars: Vars, baseFontSize: number}>({vars: {}, baseFontSize: DEFAULT_BASE_FONT_SIZE});
+export const DynamicStyleOptionsContext = React.createContext<{vars: Vars, baseFontSize?: number}>({vars: {}});
 
 export const setupDynamicWarning = () => {
   let hasWarned = false;
