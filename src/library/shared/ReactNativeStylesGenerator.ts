@@ -1,9 +1,8 @@
-import css, {Declaration}                              from "css";
-import {parseCss, ParseCssResult}                      from "./CssParser";
-import * as CssWhat                                    from "css-what";
-// @ts-ignore
-import css2Rn, {getPropertyName, getStylesForProperty} from "../../vendored/css-to-react-native/src/index";
-import {PossiblyCompiledStyleProp}                      from "../../common/Styles";
+import css, {Declaration}                      from "css";
+import {parseCss, ParseCssResult}              from "./CssParser";
+import * as CssWhat                            from "css-what";
+import {getPropertyName, getStylesForProperty} from "../../vendored/css-to-react-native/src/index";
+import {PossiblyCompiledStyleProp}             from "../../common/Styles";
 
 type StyleTuple = [string, string];
 
@@ -34,7 +33,7 @@ export const generateReactNativeStyles = (options: ReactNativeStylesGeneratorOpt
 
   const sourceId = sourceCounter++;
 
-  const allClasses  =new Set<string>();
+  const allClasses = new Set<string>();
 
   for (const rule of stylesheet.rules) {
     if (rule.type === "rule") {
@@ -47,7 +46,7 @@ export const generateReactNativeStyles = (options: ReactNativeStylesGeneratorOpt
 
         for (const decl of declarations as Declaration[]) {
           if (decl.type === "declaration" && decl.property && decl.value) {
-            const property = getPropertyName(decl.property);
+            const property       = getPropertyName(decl.property);
             const processedStyle = getStylesForProperty(property, decl.value);
 
             // transform "border-width" back into only "borderWidth" if only one value present
@@ -65,12 +64,17 @@ export const generateReactNativeStyles = (options: ReactNativeStylesGeneratorOpt
 
         // 2. grab any vars
 
+        const dynamicProperties = new Set<string>();
         const vars: Record<string, string> = {};
         for (const key of Object.keys(styleObject)) {
           const value = styleObject[key];
-          if (value && typeof value === "object" && value.var) {
-            vars[key] = value.var;
-            delete styleObject[key];
+          if (value) {
+            if (typeof value === "object" && value.var) {
+              vars[key] = value.var;
+              delete styleObject[key];
+            } else if (typeof value === "string" && value.endsWith("rem")) {
+              dynamicProperties.add(key);
+            }
           }
         }
 
@@ -100,13 +104,18 @@ export const generateReactNativeStyles = (options: ReactNativeStylesGeneratorOpt
             const name = classes.pop()!;
 
             const selectorStyleObject: any = styles[name] || (styles[name] = {
-              __name: name,
+              __name  : name,
               __source: sourceId,
             } as any);
 
             if (Object.keys(vars).length > 0) {
               const dynamic = selectorStyleObject.__dynamic || (selectorStyleObject.__dynamic = {});
               dynamic.vars  = vars;
+            }
+
+            if (dynamicProperties.size > 0) {
+              const dynamic = selectorStyleObject.__dynamic || (selectorStyleObject.__dynamic = {});
+              dynamic.dynamicProperties = dynamicProperties;
             }
 
             // complex selector with multiple classes

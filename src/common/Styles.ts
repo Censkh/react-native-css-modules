@@ -16,6 +16,7 @@ export type DynamicStyle<T> = NamedStyle<T> & {
   __dynamic: {
     when?: Array<{ classes: string[], style: PrecedentStyle<T> }>,
     mediaQueries?: any,
+    dynamicProperties?: string[],
     vars?: any
   },
 }

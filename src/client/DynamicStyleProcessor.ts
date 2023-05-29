@@ -17,6 +17,7 @@ export type Vars = Record<string, any>;
 
 export interface DynamicStyleOptions {
   vars: Vars,
+  baseFontSize?: number,
   optimise?: boolean,
   debug?: boolean,
 }
@@ -49,6 +50,13 @@ const processDynamicStyleProp = <T>(style: PossiblyCompiledStyleProp<T>, options
 
     if (style.__dynamic.mediaQueries) {
       //console.log(style.__mediaQueries);
+    }
+
+    if (style.__dynamic.dynamicProperties) {
+      for (const dynamicProperty of style.__dynamic.dynamicProperties) {
+        const dynamicValue = (style as any)[dynamicProperty];
+        (style as any)[dynamicProperty] = processDynamicProperty(dynamicValue, options)
+      }
     }
 
     if (style.__dynamic.when) {
@@ -133,3 +141,12 @@ export const processDynamicStyles = <T>(style: PossiblyCompiledStyleProp<T>, opt
   return processingOutput;
 };
 
+const processDynamicProperty = (value: string | number, options: DynamicStyleOptions): any => {
+  if (typeof value === "string") {
+    if (value.endsWith("rem")) {
+      const remValue = Number(value.replace("rem", ""));
+      return remValue * (options.baseFontSize || 16);
+    }
+  }
+  return value;
+}

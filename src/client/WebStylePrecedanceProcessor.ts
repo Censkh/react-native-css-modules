@@ -13,8 +13,8 @@ export const processWebStylePrecedence: DynamicStyleProcessor<any> = (style, opt
   }
 
   // @ts-ignore
-  const flatStyle: T[] = Array.isArray(style) ? style.flat(Infinity) : [style];
-  const classNames     = (flatStyle.map((style: any) => style?.$$css && Object.keys(style).filter(key => !key.startsWith("$"))[0]));
+  const flatStyle: T[] = Array.isArray(style) ? style.flat(Infinity) : [ style ];
+  const classNames = (flatStyle.map((style: any) => style?.$$css && Object.keys(style).filter(key => !key.startsWith("$"))[0]));
 
   const specifiedClassNames: string[] = [];
 
@@ -37,14 +37,16 @@ export const processWebStylePrecedence: DynamicStyleProcessor<any> = (style, opt
                 cssRule.__originalSelectorText = selectorText;
               }
 
-              const baseSelector      = selectorText.split(",")[0].trim().substring(1);
-              const baseSelectorParts = baseSelector.split(".");
-              if (baseSelectorParts.includes(className) && baseSelectorParts.every(selector => !selector || specifiedClassNames.includes(selector))) {
-                const newSelector      = `.${specifiedClassName}`;
-                const newSelectorCache = ((cssRule).__newSelectorCache || ((cssRule).__newSelectorCache = {}));
-                if (!newSelectorCache[newSelector]) {
-                  newSelectorCache[newSelector] = true;
-                  cssRule.selectorText += ", " + newSelector;
+              for (let baseSelector of selectorText.split(",")) {
+                baseSelector = baseSelector.trim().substring(1);
+                const baseSelectorParts = baseSelector.split(".");
+                if (baseSelectorParts.includes(className) && baseSelectorParts.every(selector => !selector || specifiedClassNames.includes(selector))) {
+                  const newSelector = `.${specifiedClassName}`;
+                  const newSelectorCache = ((cssRule).__newSelectorCache || ((cssRule).__newSelectorCache = {}));
+                  if (!newSelectorCache[newSelector]) {
+                    newSelectorCache[newSelector] = true;
+                    cssRule.selectorText += ", " + newSelector;
+                  }
                 }
               }
             }

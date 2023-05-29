@@ -40,7 +40,7 @@ test("class selector", (t) => {
       styles.button,
       styles.sm,
     ], {
-      vars : {},
+      vars: {},
     });
 
     t.deepEqual(output, {
@@ -182,183 +182,223 @@ test("class selector", (t) => {
 test("dynamic processing", (t) => {
   const {result} = processDynamicStyles([
     {
-      "__name": "Button",
-      "__source": 4,
-      "__dynamic": {
+      "__name"        : "Button",
+      "__source"      : 4,
+      "__dynamic"     : {
         "vars": {
-          "borderWidth": "borderWidthGeneral",
-          "borderColor": "palette-primary",
-          "borderRadius": "borderRadiusSizeRounded",
+          "borderWidth"    : "borderWidthGeneral",
+          "borderColor"    : "palette-primary",
+          "borderRadius"   : "borderRadiusSizeRounded",
           "backgroundColor": "palette-primary",
-          "color": "palette-primaryContrast",
-          "fontFamily": "typography-fontFamilyHeadingBold"
-        }
+          "color"          : "palette-primaryContrast",
+          "fontFamily"     : "typography-fontFamilyHeadingBold",
+        },
       },
-      "borderStyle": "solid",
-      "userSelect": "none",
-      "overflow": "hidden",
-      "position": "relative",
-      "paddingTop": 8,
-      "paddingRight": 16,
-      "paddingBottom": 8,
-      "paddingLeft": 16,
+      "borderStyle"   : "solid",
+      "userSelect"    : "none",
+      "overflow"      : "hidden",
+      "position"      : "relative",
+      "paddingTop"    : 8,
+      "paddingRight"  : 16,
+      "paddingBottom" : 8,
+      "paddingLeft"   : 16,
       "justifyContent": "center",
-      "alignItems": "center",
-      "fontStyle": "normal",
-      "fontSize": 16,
-      "textAlign": "center",
-      "flexDirection": "row"
+      "alignItems"    : "center",
+      "fontStyle"     : "normal",
+      "fontSize"      : 16,
+      "textAlign"     : "center",
+      "flexDirection" : "row",
     },
     {
-      "__name": "color__primary",
-      "__source": 4,
+      "__name"   : "color__primary",
+      "__source" : 4,
       "__dynamic": {
         "vars": {
           "backgroundColor": "palette-primary",
-          "borderColor": "palette-primary",
-          "color": "palette-primaryContrast"
+          "borderColor"    : "palette-primary",
+          "color"          : "palette-primaryContrast",
         },
         "when": [
           {
             "classes": [
-              "Button"
+              "Button",
             ],
-            "style": {
-              "__precedence": 1
-            }
-          }
-        ]
-      }
+            "style"  : {
+              "__precedence": 1,
+            },
+          },
+        ],
+      },
     },
     null,
     [
       {
-        "__name": "variant__outline",
-        "__source": 4,
+        "__name"   : "variant__outline",
+        "__source" : 4,
         "__dynamic": {
           "vars": {
-            "borderColor": "palette-textMain"
+            "borderColor": "palette-textMain",
           },
           "when": [
             {
               "classes": [
-                "Button"
+                "Button",
               ],
-              "style": {
+              "style"  : {
                 "backgroundColor": "transparent",
-                "__precedence": 1
-              }
-            }
-          ]
-        }
+                "__precedence"   : 1,
+              },
+            },
+          ],
+        },
       },
       {
-        "__name": "variant__outline__primary",
-        "__source": 4,
+        "__name"   : "variant__outline__primary",
+        "__source" : 4,
         "__dynamic": {
           "vars": {
             "borderColor": "palette-primary",
-            "color": "palette-primary"
+            "color"      : "palette-primary",
           },
           "when": [
             {
               "classes": [
-                "Button"
+                "Button",
               ],
-              "style": {
-                "__precedence": 1
-              }
-            }
-          ]
-        }
-      }
+              "style"  : {
+                "__precedence": 1,
+              },
+            },
+          ],
+        },
+      },
     ],
     null,
     null,
     [
       {
-        "__name": "btn",
-        "__source": 1,
-        "__dynamic": {
+        "__name"           : "btn",
+        "__source"         : 1,
+        "__dynamic"        : {
           "vars": {
-            "borderBottom": "colorBorders"
-          }
+            "borderBottom": "colorBorders",
+          },
         },
-        "boxSizing": "border-box",
-        "backgroundColor": "#ffffff",
-        "display": "flex",
-        "flexDirection": "row",
-        "justifyContent": "center",
-        "alignItems": "center",
-        "paddingTop": 24,
-        "paddingRight": 32,
-        "paddingBottom": 24,
-        "paddingLeft": 32,
-        "minWidth": 300,
-        "height": 84,
-        "textAlign": "center",
+        "boxSizing"        : "border-box",
+        "backgroundColor"  : "#ffffff",
+        "display"          : "flex",
+        "flexDirection"    : "row",
+        "justifyContent"   : "center",
+        "alignItems"       : "center",
+        "paddingTop"       : 24,
+        "paddingRight"     : 32,
+        "paddingBottom"    : 24,
+        "paddingLeft"      : 32,
+        "minWidth"         : 300,
+        "height"           : 84,
+        "textAlign"        : "center",
         "borderBottomWidth": 1,
-        "borderRadius": 8,
-        "borderTopWidth": 0,
-        "borderLeftWidth": 0,
-        "borderRightWidth": 0
+        "borderRadius"     : 8,
+        "borderTopWidth"   : 0,
+        "borderLeftWidth"  : 0,
+        "borderRightWidth" : 0,
       },
       null,
       {
-        "__name": "not_last",
-        "__source": 1,
+        "__name"   : "not_last",
+        "__source" : 1,
         "__dynamic": {
           "when": [
             {
               "classes": [
-                "btn"
+                "btn",
               ],
-              "style": {
+              "style"  : {
                 "marginBottom": 16,
-                "__precedence": 1
-              }
-            }
-          ]
-        }
+                "__precedence": 1,
+              },
+            },
+          ],
+        },
       },
       {
-        "__name": "checkable",
-        "__source": 1,
+        "__name"   : "checkable",
+        "__source" : 1,
         "__dynamic": {
           "when": [
             {
               "classes": [
-                "btn"
+                "btn",
               ],
-              "style": {
-                "paddingTop": 16,
-                "paddingRight": 16,
+              "style"  : {
+                "paddingTop"   : 16,
+                "paddingRight" : 16,
                 "paddingBottom": 16,
-                "paddingLeft": 16,
-                "height": 120,
-                "__precedence": 1
-              }
+                "paddingLeft"  : 16,
+                "height"       : 120,
+                "__precedence" : 1,
+              },
             },
             {
               "classes": [
-                "btnText"
+                "btnText",
               ],
-              "style": {
-                "textAlign": "left",
-                "paddingLeft": 16,
+              "style"  : {
+                "textAlign"   : "left",
+                "paddingLeft" : 16,
                 "paddingRight": 16,
-                "__precedence": 1
-              }
-            }
-          ]
-        }
+                "__precedence": 1,
+              },
+            },
+          ],
+        },
       },
       {},
-      null
-    ]
+      null,
+    ],
   ] as any, {
     vars: {},
   });
 
   t.deepEqual(flatten(result).backgroundColor, "#ffffff");
+});
+
+test("dynamic style fix", (t) => {
+  const {result} = processDynamicStyles([
+    {
+      "__name": "ListItem",
+    },
+    null,
+    null,
+    {
+      "__name"   : "wrap",
+      "__source" : 29,
+      "__dynamic": {
+        "when": [
+          {
+            "classes": [
+              "ListItem",
+            ],
+            "style"  : {
+              "justifyContent" : "flex-start",
+              "alignItems"     : "flex-start",
+              "flexWrap"       : "wrap",
+              "flexShrink"     : 1,
+              "wordBreak"      : "normal",
+              "whiteSpace"     : "normal",
+              "backgroundColor": "blue",
+              "__precedence"   : 1,
+            },
+          },
+        ],
+      },
+    },
+    {
+      "backgroundColor": "orange",
+    },
+  ], {
+    vars: {},
+  });
+  console.log(JSON.stringify(result, null, 2));
+  t.deepEqual(flatten(result).backgroundColor, "orange");
 });

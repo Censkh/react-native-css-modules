@@ -1,5 +1,5 @@
 import css                                 from "css";
-import sass, {LegacyOptions, Options}               from "sass";
+import sass, {LegacyOptions}               from "sass";
 import path                                from "path";
 import fs                                  from "fs";
 import {ReactNativeStylesGeneratorOptions} from "./ReactNativeStylesGenerator";
@@ -71,7 +71,7 @@ export interface ParseCssResult {
 }
 
 export const parseCss = (options: ReactNativeStylesGeneratorOptions): ParseCssResult => {
-  const string = sass.renderSync(resolveSassOptions(options)).css.toString();
+  const string     = sass.renderSync(resolveSassOptions(options)).css.toString();
   const stylesheet = css.parse(string).stylesheet;
   if (!stylesheet) {
     throw new Error("[react-native-css-modules] Couldn't parse CSS");

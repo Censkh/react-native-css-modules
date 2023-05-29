@@ -1,3 +1,8 @@
+# 0.2.0
+
+- BREAKING CHANGE: VarsContext -> DynamicStyleOptionsContext
+- rem support
+
 # 0.1.0
 
 - support Metro web CSS modules
