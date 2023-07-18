@@ -1,3 +1,9 @@
+# 0.3.0
+
+- media query support in native
+- vw/vh support
+- fix dynamic values overriding static values
+
 # 0.2.0
 
 - BREAKING CHANGE: VarsContext -> DynamicStyleOptionsContext

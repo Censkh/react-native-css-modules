@@ -12,10 +12,11 @@ export type PrecedentStyle<T> = T & {
   __precedence: number,
 }
 
+export type MediaQuery = any[];
+
 export type DynamicStyle<T> = NamedStyle<T> & {
   __dynamic: {
-    when?: Array<{ classes: string[], style: PrecedentStyle<T> }>,
-    mediaQueries?: any,
+    when?: Array<{ classes: string[], mediaQueries?: MediaQuery, style: PrecedentStyle<T> }>,
     dynamicProperties?: string[],
     vars?: any
   },

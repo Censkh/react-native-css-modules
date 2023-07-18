@@ -28,3 +28,47 @@ test("rem", (t) => {
 
 });
 
+test("vw/vh", (t) => {
+
+  const styles = generateReactNativeStyles({
+    src: `.panel {
+    height: 50vh;
+  }`,
+  }).styles;
+
+  let height =  720;
+  const dimensions = {
+    getWidth : () => 1280,
+    getHeight: () => height,
+    listen   : () => {
+      return () => {
+      };
+    }
+  }
+
+  {
+    const output = processDynamicStyles([
+      styles.panel,
+    ], {
+      dimensions: dimensions,
+    });
+
+    t.deepEqual(flatten(output.result), {
+      height     : 360,
+    });
+  }
+
+  {
+    height = 1440;
+    const output = processDynamicStyles([
+      styles.panel,
+    ], {
+      dimensions: dimensions,
+    });
+
+    t.deepEqual(flatten(output.result), {
+      height     : 720,
+    });
+  }
+
+});

@@ -1,22 +1,31 @@
 import type {StyleProp}                                          from "react-native";
 import {isDynamicStyle, isNamedStyle, PossiblyCompiledStyleProp} from "../common/Styles";
+import {matchQuery}                                              from "./MediaQueryMatch";
 
 export interface DynamicStyleProcessorOptions {
-  state?: string[]
+  state?: string[];
 }
 
 export type DynamicStyleProcessor<T> = ((style: PossiblyCompiledStyleProp<T>, options?: DynamicStyleProcessorOptions) => StyleProp<T>);
 
+export interface StyleDimensions {
+  listen: (callback: () => void) => () => void,
+  getWidth: () => number,
+  getHeight: () => number
+}
+
 interface ProcessDynamicStylesOutput<T> {
   classes: string[],
   requiresPostProcessing?: number[],
+  respondsToDimensionsChange?: boolean,
   result: T[],
 }
 
 export type Vars = Record<string, any>;
 
 export interface DynamicStyleOptions {
-  vars: Vars,
+  vars?: Vars,
+  dimensions?: StyleDimensions,
   baseFontSize?: number,
   optimise?: boolean,
   debug?: boolean,
@@ -46,16 +55,13 @@ const processDynamicStyleProp = <T>(style: PossiblyCompiledStyleProp<T>, options
 
   if (isDynamicStyle(style)) {
     resolvedOutput.classes.push(style.__name);
+    let dynamicStyle: any = undefined;
     resolvedOutput.result.push(style);
-
-    if (style.__dynamic.mediaQueries) {
-      //console.log(style.__mediaQueries);
-    }
 
     if (style.__dynamic.dynamicProperties) {
       for (const dynamicProperty of style.__dynamic.dynamicProperties) {
-        const dynamicValue = (style as any)[dynamicProperty];
-        (style as any)[dynamicProperty] = processDynamicProperty(dynamicValue, options)
+        const dynamicValue              = (style as any)[dynamicProperty];
+        (dynamicStyle || (dynamicStyle = {}))[dynamicProperty] = processDynamicProperty(dynamicValue, options, resolvedOutput);
       }
     }
 
@@ -67,11 +73,15 @@ const processDynamicStyleProp = <T>(style: PossiblyCompiledStyleProp<T>, options
     }
 
     if (style.__dynamic.vars) {
-      resolvedOutput.result.push(Object.keys(style.__dynamic.vars).reduce((dynamic, key) => {
+      Object.keys(style.__dynamic.vars).reduce((dynamic, key) => {
         const varKey = style.__dynamic.vars[key];
-        dynamic[key] = options.vars[varKey];
+        dynamic[key] = options.vars?.[varKey];
         return dynamic;
-      }, {} as any));
+      }, (dynamicStyle || (dynamicStyle = {})));
+    }
+
+    if (dynamicStyle) {
+      resolvedOutput.result.push(dynamicStyle);
     }
   } else {
     if (isNamedStyle(style)) {
@@ -97,14 +107,26 @@ const postProcessDynamicStyles = <T>(output: ProcessDynamicStylesOutput<T>, opti
     if (isDynamicStyle(style)) {
       if (style.__dynamic.when) {
         for (const whenCondition of style.__dynamic.when) {
-          let completedIndex   = -1;
-          const meetsCondition = whenCondition.classes.every((className, index) => {
+          if (whenCondition.mediaQueries?.length) {
+            output.respondsToDimensionsChange = true;
+          }
+
+          let completedIndex = -1;
+          let meetsCondition = whenCondition.classes.every((className, index) => {
             completedIndex = index;
             return output.classes.includes(className);
           });
 
+          if (meetsCondition && whenCondition.mediaQueries?.length) {
+            meetsCondition = matchQuery(whenCondition.mediaQueries, {
+              width : options.dimensions?.getWidth(),
+              height: options.dimensions?.getHeight(),
+            });
+          }
+
           if (meetsCondition) {
             const dynamicStyles = dynamicStylesBySource[style.__source] || (dynamicStylesBySource[style.__source] = []);
+
             (dynamicStyles[whenCondition.style.__precedence - 1] || (dynamicStyles[whenCondition.style.__precedence - 1] = [])).push(whenCondition.style as any);
           }
         }
@@ -112,13 +134,17 @@ const postProcessDynamicStyles = <T>(output: ProcessDynamicStylesOutput<T>, opti
     }
   }
 
+  if (options.debug) {
+    console.log(dynamicStylesBySource);
+  }
+
   // we want to insert all the nested styles after all the styles from the source file they were from
   // this means that .btn.sm.primary is insert after all .btn.sm styles, and all .btn styles
   // but importantly less nested styles from other source files are not superseded
   for (const source in dynamicStylesBySource) {
     const dynamicStyles = dynamicStylesBySource[source];
-    let lastOfSource        = -1;
-    for (let i = output.result.length; i >=0; i--) {
+    let lastOfSource    = -1;
+    for (let i = output.result.length; i >= 0; i--) {
       const style = output.result[i];
       if (isNamedStyle(style) && style.__source === Number(source)) {
         lastOfSource = i;
@@ -141,12 +167,17 @@ export const processDynamicStyles = <T>(style: PossiblyCompiledStyleProp<T>, opt
   return processingOutput;
 };
 
-const processDynamicProperty = (value: string | number, options: DynamicStyleOptions): any => {
+const processDynamicProperty = (value: string | number, options: DynamicStyleOptions, output: ProcessDynamicStylesOutput<any>): any => {
   if (typeof value === "string") {
     if (value.endsWith("rem")) {
-      const remValue = Number(value.replace("rem", ""));
+      const remValue = parseFloat(value);
       return remValue * (options.baseFontSize || 16);
+    } else if (value.endsWith("vw") || value.endsWith("vh")) {
+      // listen to dimensions change
+      output.respondsToDimensionsChange = true;
+      const parsedValue = parseFloat(value) / 100;
+      return parsedValue * (value.endsWith("vw") ? (options.dimensions?.getWidth() || 0) : (options.dimensions?.getHeight() || 0));
     }
   }
   return value;
-}
+};

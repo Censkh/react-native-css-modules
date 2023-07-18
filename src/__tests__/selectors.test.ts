@@ -68,7 +68,7 @@ test("class selector", (t) => {
                   "button",
                 ],
                 style  : {
-                  __precedence: 1,
+                  __precedence: 2,
                   height      : 20,
                 },
               },
@@ -78,7 +78,7 @@ test("class selector", (t) => {
                   "disabled",
                 ],
                 style  : {
-                  __precedence: 2,
+                  __precedence: 3,
                   height      : 14,
                 },
               },
@@ -87,7 +87,7 @@ test("class selector", (t) => {
           fontSize : 12,
         },
         {
-          __precedence: 1,
+          __precedence: 2,
           height      : 20,
         },
       ],
@@ -224,7 +224,7 @@ test("dynamic processing", (t) => {
               "Button",
             ],
             "style"  : {
-              "__precedence": 1,
+              "__precedence": 2,
             },
           },
         ],
@@ -246,7 +246,7 @@ test("dynamic processing", (t) => {
               ],
               "style"  : {
                 "backgroundColor": "transparent",
-                "__precedence"   : 1,
+                "__precedence"   : 2,
               },
             },
           ],
@@ -266,7 +266,7 @@ test("dynamic processing", (t) => {
                 "Button",
               ],
               "style"  : {
-                "__precedence": 1,
+                "__precedence": 2,
               },
             },
           ],
@@ -315,7 +315,7 @@ test("dynamic processing", (t) => {
               ],
               "style"  : {
                 "marginBottom": 16,
-                "__precedence": 1,
+                "__precedence": 2,
               },
             },
           ],
@@ -336,7 +336,7 @@ test("dynamic processing", (t) => {
                 "paddingBottom": 16,
                 "paddingLeft"  : 16,
                 "height"       : 120,
-                "__precedence" : 1,
+                "__precedence" : 2,
               },
             },
             {
@@ -347,7 +347,7 @@ test("dynamic processing", (t) => {
                 "textAlign"   : "left",
                 "paddingLeft" : 16,
                 "paddingRight": 16,
-                "__precedence": 1,
+                "__precedence": 2,
               },
             },
           ],
@@ -387,7 +387,7 @@ test("dynamic style fix", (t) => {
               "wordBreak"      : "normal",
               "whiteSpace"     : "normal",
               "backgroundColor": "blue",
-              "__precedence"   : 1,
+              "__precedence"   : 2,
             },
           },
         ],
@@ -399,6 +399,5 @@ test("dynamic style fix", (t) => {
   ], {
     vars: {},
   });
-  console.log(JSON.stringify(result, null, 2));
   t.deepEqual(flatten(result).backgroundColor, "orange");
 });
