@@ -14,11 +14,14 @@ export type PrecedentStyle<T> = T & {
 
 export type MediaQuery = any[];
 
+export interface DynamicStyleProperties {
+  specialUnits?: string[],
+  vars?: any
+}
+
 export type DynamicStyle<T> = NamedStyle<T> & {
-  __dynamic: {
-    when?: Array<{ classes: string[], mediaQueries?: MediaQuery, style: PrecedentStyle<T> }>,
-    dynamicProperties?: string[],
-    vars?: any
+  __dynamic: DynamicStyleProperties & {
+    when?: Array<{ classes: string[], mediaQueries?: MediaQuery, style: PrecedentStyle<T> } & DynamicStyleProperties>,
   },
 }
 

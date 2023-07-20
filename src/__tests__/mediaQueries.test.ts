@@ -17,8 +17,8 @@ test("media queries", (t) => {
       "__dynamic"      : {
         "when": [
           {
-            "classes"     : [],
-            "style"       : {
+            "classes"   : [],
+            "style"     : {
               "backgroundColor": "blue",
               "__precedence"   : 1,
             },
@@ -26,13 +26,13 @@ test("media queries", (t) => {
               {
                 expressions: [
                   {
-                    feature: 'width',
-                    modifier: 'min',
-                    value: '200px',
+                    feature : "width",
+                    modifier: "min",
+                    value   : "200px",
                   },
                 ],
-                inverse: false,
-                type: 'all',
+                inverse    : false,
+                type       : "all",
               },
             ],
           },
@@ -56,4 +56,59 @@ test("media queries", (t) => {
   t.deepEqual(flatten(result.result), {
     backgroundColor: "blue",
   });
+});
+
+test("nested media queries", (t) => {
+  const styles = generateReactNativeStyles({
+    src: `.screen {
+  height: 70vh;
+  width: 100%;
+
+  @media (min-width: 1024px) {
+    align-self: flex-end;
+    width: 70vw;
+    height: 100%;
+  }
+
+}`,
+  }).styles;
+
+  let width       = 720;
+  const dimensions = {
+    getWidth : () => width,
+    getHeight: () => 640,
+    listen   : () => {
+      return () => {
+      };
+    },
+  };
+
+  {
+    const output = processDynamicStyles([
+      styles.screen,
+    ], {
+      dimensions: dimensions,
+    });
+
+    t.deepEqual(flatten(output.result), {
+      height: 448,
+      width : "100%",
+    });
+  }
+
+  {
+    width = 1040;
+    const output = processDynamicStyles([
+      styles.screen,
+    ], {
+      dimensions: dimensions,
+      debug: false
+    });
+
+    t.deepEqual(flatten(output.result), {
+      alignSelf: "flex-end",
+      height: "100%",
+      width : 728,
+    });
+  }
 });

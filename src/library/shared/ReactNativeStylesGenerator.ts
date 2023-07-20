@@ -62,7 +62,7 @@ const processRule = (rule: css.Rule, styles: ReactNativeStyles, sourceId: number
 
     // 2. grab any vars
 
-    const dynamicProperties            = new Set<string>();
+    const specialUnits            = new Set<string>();
     const vars: Record<string, string> = {};
     for (const key of Object.keys(styleObject)) {
       const value = styleObject[key];
@@ -71,7 +71,7 @@ const processRule = (rule: css.Rule, styles: ReactNativeStyles, sourceId: number
           vars[key] = value.var;
           delete styleObject[key];
         } else if (typeof value === "string" && DYNAMIC_UNITS.some(unit => value.endsWith(unit))) {
-          dynamicProperties.add(key);
+          specialUnits.add(key);
         }
       }
     }
@@ -106,35 +106,42 @@ const processRule = (rule: css.Rule, styles: ReactNativeStyles, sourceId: number
           __source: sourceId,
         } as any);
 
-        if (Object.keys(vars).length > 0) {
-          const dynamic = selectorStyleObject.__dynamic || (selectorStyleObject.__dynamic = {});
-          dynamic.vars  = vars;
-        }
-
-        if (dynamicProperties.size > 0) {
-          const dynamic             = selectorStyleObject.__dynamic || (selectorStyleObject.__dynamic = {});
-          dynamic.dynamicProperties = Array.from(dynamicProperties);
-        }
-
         // complex selector with multiple classes
         if (classes.length > 0 || mediaQuery) {
           const dynamic = selectorStyleObject.__dynamic || (selectorStyleObject.__dynamic = {});
           const when    = dynamic.when || (dynamic.when = []);
 
-          const subStyle: any = {
+          const whenCondition: any = {
             classes: classes,
             style  : styleObject,
           };
 
+          if (specialUnits.size > 0) {
+            whenCondition.specialUnits = Array.from(specialUnits);
+          }
+
+          if (Object.keys(vars).length > 0) {
+            whenCondition.vars  = vars;
+          }
+
           if (mediaQuery) {
-            subStyle.mediaQueries = mediaQuery;
+            whenCondition.mediaQueries = mediaQuery;
           }
 
           styleObject.__precedence = classes.length + 1;
 
-          when.push(subStyle);
+          when.push(whenCondition);
         } else {
           Object.assign(selectorStyleObject, styleObject);
+          if (specialUnits.size > 0) {
+            const dynamic             = selectorStyleObject.__dynamic || (selectorStyleObject.__dynamic = {});
+            dynamic.specialUnits = Array.from(specialUnits);
+          }
+
+          if (Object.keys(vars).length > 0) {
+            const dynamic = selectorStyleObject.__dynamic || (selectorStyleObject.__dynamic = {});
+            dynamic.vars  = vars;
+          }
         }
       }
     }
