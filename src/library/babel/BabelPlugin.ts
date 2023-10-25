@@ -38,13 +38,6 @@ function requireCssFile(filepath: string, cssFile: string) {
   return [fs.readFileSync(resolvedPath).toString("utf-8"), resolvedPath];
 }
 
-const outputDir = (state: babel.PluginPass) => {
-  const outDir = p.resolve(OUTPUT_DIR_NAME, p.relative(p.resolve(state.file.opts.root!, "src"), p.dirname(state.file.opts.filename!)));
-  if (!fs.existsSync(outDir)) {
-    fs.mkdirSync(outDir, {recursive: true});
-  }
-  return outDir;
-};
 
 export default function babelPluginReactNativeCssModules(): babel.PluginObj {
   return {
@@ -61,14 +54,18 @@ export default function babelPluginReactNativeCssModules(): babel.PluginObj {
           const {css, styles} = generateReactNativeStyles({filename: filePath, src: fileContents});
           const componentName = p.basename(value).split(".")[0];
 
-          const outDir = outputDir(state);
-          fs.writeFileSync(p.resolve(outDir, `${componentName}.module.css`), css);
-          // metro web handles CSS modules for us
-          fs.writeFileSync(p.resolve(outDir, `${componentName}.generated-styles.js`), `module.exports=require('./${componentName}.module.css');`);
-          fs.writeFileSync(p.resolve(outDir, `${componentName}.generated-styles.native.js`), `module.exports=${JSON.stringify(styles)}`);
-          (path.parentPath.node as any).source.value = `./${componentName}.generated-styles`;
+          const outDir = p.dirname(filePath);
+          if (process.env.NODE_ENV !== "test") {
+            fs.writeFileSync(p.resolve(outDir, `${componentName}.module.css`), css);
+            // metro web handles CSS modules for us
+            fs.writeFileSync(p.resolve(outDir, `${componentName}.generated-styles.js`), `module.exports=require('./${componentName}.module.css');`);
+            fs.writeFileSync(p.resolve(outDir, `${componentName}.generated-styles.native.js`), `module.exports=${JSON.stringify(styles)}`);
+          }
+
+          (path.parentPath.node as any).source.value = p.relative(requringFile, p.resolve(outDir,`./${componentName}.generated-styles`));
           //path.parentPath.node.source =
         }
+
       },
 
     },
