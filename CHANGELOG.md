@@ -1,3 +1,7 @@
+# 0.3.1
+
+- fix import paths from importing outside of current dir
+
 # 0.3.0
 
 - media query support in native
