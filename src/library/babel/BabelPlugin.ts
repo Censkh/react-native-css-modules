@@ -1,16 +1,13 @@
 import { generateReactNativeStyles } from "../shared/ReactNativeStylesGenerator";
 
-import type babel from "@babel/core";
+import * as babel from "@babel/core";
 import * as p     from "path";
 import fs         from "fs";
 
-const OUTPUT_DIR_NAME = "dist";
+const EXTENTIONS = [ ".module.css", ".module.scss" ];
 
-const matchExtensions = matcher([ ".scss", ".css" ]);
-
-function matcher(extensions = [ ".css" ]) {
-  const extensionsPattern = extensions.join("|").replace(/\./g, "\\.");
-  return new RegExp(`(${extensionsPattern})$`, "i");
+function isCssModule(fileName: string) {
+  return EXTENTIONS.some(ext => fileName.endsWith(ext));
 }
 
 function resolveFromDir(dir: string) {
@@ -24,7 +21,7 @@ function resolveFromDir(dir: string) {
 }
 
 
-function requireCssFile(from: string, cssFile: string): [fileContents: () => string, filePath: string] {
+function requireCssFile(from: string, cssFile: string): [ fileContents: () => string, filePath: string ] {
   let filePathOrModuleName = cssFile;
 
   // only resolve path to file when we have a file path
@@ -38,24 +35,41 @@ function requireCssFile(from: string, cssFile: string): [fileContents: () => str
 
 const COMPILED_CACHE: Record<string, true> = {};
 
-const tryTransformImportNode = (valueNode: { value: string }, state: babel.PluginPass) => {
+const tryTransformImportNode = (valueNode: babel.Node & { value: string }, state: babel.PluginPass, path: babel.NodePath) => {
   const { value } = valueNode;
-  if (matchExtensions.test(value)) {
+  if (isCssModule(value)) {
     const from = resolveFromDir(state.file.opts.filename! ? p.dirname(state.file.opts.filename!) : state.cwd);
 
     const [ fileContents, filePath ] = requireCssFile(from, value);
-    const componentName   = p.basename(value).split(".")[0];
+    const componentName              = p.basename(value).split(".")[0];
 
     if (!COMPILED_CACHE[filePath]) {
       // move all nested rules to the top level
       const { css, styles } = generateReactNativeStyles({ filename: filePath, src: fileContents() });
 
-      const outDir = p.resolve(p.resolve(state.cwd, OUTPUT_DIR_NAME), p.relative(state.cwd, p.dirname(filePath)));
+      const { distDir, rootDir } = state.opts as any;
+      if (!distDir) {
+        throw new Error("[react-native-css-modules] 'distDir' is required in babel plugin options, it will be a relative path to where your files are compiled, eg. 'dist'");
+      }
+
+      if (!rootDir) {
+        throw new Error("[react-native-css-modules] 'rootDir' is required in babel plugin options, it will be a relative path to where your source file root is, eg. 'src' or '.'");
+      }
+
+      const outDir = p.resolve(p.resolve(state.cwd, distDir), p.relative(p.resolve(state.cwd, rootDir || "."), p.dirname(filePath)));
+
+      // actually write the files
       if (process.env.NODE_ENV !== "test") {
+        if (!fs.existsSync(outDir)) {
+          fs.mkdirSync(outDir, { recursive: true });
+        }
+
         fs.writeFileSync(p.resolve(outDir, `${componentName}.module.css`), css);
         // metro web handles CSS modules for us
         fs.writeFileSync(p.resolve(outDir, `${componentName}.generated-styles.js`), `module.exports=require('./${componentName}.module.css');`);
         fs.writeFileSync(p.resolve(outDir, `${componentName}.generated-styles.native.js`), `module.exports=${JSON.stringify(styles)}`);
+      } else {
+        path.addComment("leading", ` generated file location: ${p.relative(process.cwd(), outDir)} `);
       }
 
     }
@@ -70,14 +84,14 @@ export default function babelPluginReactNativeCssModules(): babel.PluginObj {
   return {
     visitor: {
       ImportDeclaration(path, state) {
-        tryTransformImportNode(path.node.source, state);
+        tryTransformImportNode(path.node.source, state, path);
       },
 
       CallExpression(path, state) {
         if (path.node.callee?.type === "Identifier") {
           if (path.node.callee.name === "require") {
             if (path.node.arguments[0]?.type === "StringLiteral") {
-              tryTransformImportNode(path.node.arguments[0], state);
+              tryTransformImportNode(path.node.arguments[0], state, path);
 
             }
           }
